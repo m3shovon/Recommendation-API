@@ -1,12 +1,14 @@
-from typing import Union
+# from typing import Union
 from fastapi import FastAPI
+from .routers import movies
+from .database import engine, Base
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+Base.metadata.create_all(bind=engine)
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+app.include_router(movies.router)
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to the Movie Recommendation API"}
